@@ -14,6 +14,13 @@ def get_context(context):
 	asset hashes never need to be hard-coded — and inject window.csrf_token so
 	the SPA can POST to whitelisted endpoints once the user is logged in.
 	"""
+	# Website Settings.home_page = "kamra" serves this shell at "/", but the
+	# router's basename is /kamra: nothing matches and the page renders blank.
+	path = frappe.request.path if frappe.request else "/kamra"
+	if path != "/kamra" and not path.startswith("/kamra/"):
+		frappe.local.flags.redirect_location = "/kamra"
+		raise frappe.Redirect(302)
+
 	index_path = frappe.get_app_path("kamra", "public", "frontend", "index.html")
 	if not os.path.exists(index_path):
 		frappe.throw(
